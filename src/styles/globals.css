@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* SRIKA Clean Light Design System */
+  --background: #FFFFFF;
+  --surface: #F8F9FA;
+  --surface-elevated: #FFFFFF;
+  --primary: #000000;
+  --accent: #FF6B35;
+  --accent-soft: #FFE5DC;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #E5E5E5;
+  --border-strong: #000000;
+  
+  /* Spacing Scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 8rem;
+  
+  /* Typography */
+  --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Animation */
+  --duration-fast: 300ms;
+  --duration-normal: 500ms;
+  --ease: ease-out;
+}
+
+@layer base {
+  * {
+    @apply border-[#E5E5E5] outline-none;
+  }
+
+  body {
+    @apply bg-white text-black;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-base);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-base);
+    letter-spacing: -0.02em;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Grid System */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-lg);
+}
+
+/* Remove default list styles */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E5E5E5;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #CCCCCC;
+}
+
+/* Safe animation utilities */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp var(--duration-normal) var(--ease);
+}
+
+.animate-fadeIn {
+  animation: fadeIn var(--duration-normal) var(--ease);
+}
+
+.animate-scaleIn {
+  animation: scaleIn var(--duration-normal) var(--ease);
+}
