@@ -24,10 +24,10 @@ export function VideoBackground({
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover transition-all duration-1000"
+        className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 transition-all duration-1000"
         style={{
           filter: `blur(8px) ${isDark ? 'invert(1) brightness(0.7)' : 'brightness(1)'}`,
-          transform: 'scale(1.1)', // Prevents blur edges from showing
+          transform: 'translate(-50%, -50%) scale(1.1)', // Prevents blur edges from showing
         }}
         src={src}
       />

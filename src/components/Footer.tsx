@@ -4,12 +4,16 @@ import { useTheme } from '../contexts/ThemeContext';
 export function Footer() {
   const { isDark } = useTheme();
 
+  const textColor = isDark ? '#E5E5E5' : '#4a4a4a';
+  const headingColor = isDark ? '#ffffff' : '#1a1a1a';
+  const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
   return (
     <motion.footer
       className="py-16 border-t-2"
       animate={{
         backgroundColor: 'transparent',
-        borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : '#000000'
+        borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
       }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
     >
@@ -23,7 +27,10 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <div
+              className="text-2xl font-bold mb-4 flex items-center gap-2"
+              style={{ color: headingColor }}
+            >
               SRIKA
               <motion.div
                 className="w-2 h-2 bg-[#FF6B35] rounded-full"
@@ -38,7 +45,10 @@ export function Footer() {
                 }}
               />
             </div>
-            <p className="text-sm text-[#E5E5E5] max-w-md leading-relaxed">
+            <p
+              className="text-sm max-w-md leading-relaxed"
+              style={{ color: textColor }}
+            >
               AI-powered full-body motion input for gaming, fitness, XR, and training.
             </p>
           </motion.div>
@@ -50,7 +60,10 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           >
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wide">
+            <h4
+              className="text-sm font-bold mb-4 uppercase tracking-wide"
+              style={{ color: headingColor }}
+            >
               Product
             </h4>
             <ul className="space-y-3">
@@ -68,7 +81,8 @@ export function Footer() {
                 >
                   <motion.a
                     href={link.href}
-                    className="text-sm text-[#E5E5E5] hover:text-[#FF6B35] transition-colors inline-block"
+                    className="text-sm hover:text-[#FF6B35] transition-colors inline-block"
+                    style={{ color: textColor }}
                     whileHover={{ x: 3 }}
                   >
                     {link.label}
@@ -84,7 +98,10 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
-            <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wide">
+            <h4
+              className="text-sm font-bold mb-4 uppercase tracking-wide"
+              style={{ color: headingColor }}
+            >
               Company
             </h4>
             <ul className="space-y-3">
@@ -103,7 +120,8 @@ export function Footer() {
                 >
                   <motion.a
                     href={link.href}
-                    className="text-sm text-[#E5E5E5] hover:text-[#FF6B35] transition-colors inline-block"
+                    className="text-sm hover:text-[#FF6B35] transition-colors inline-block"
+                    style={{ color: textColor }}
                     whileHover={{ x: 3 }}
                   >
                     {link.label}
@@ -116,13 +134,17 @@ export function Footer() {
 
         {/* Bottom */}
         <motion.div
-          className="pt-8 border-t border-[#333333] flex flex-col md:flex-row justify-between items-center gap-4"
+          className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+          style={{ borderTopColor: borderColor, borderTopWidth: '1px' }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <p className="text-sm text-[#E5E5E5]">
+          <p
+            className="text-sm"
+            style={{ color: textColor }}
+          >
             © {new Date().getFullYear()} SRIKA. All rights reserved.
           </p>
           <div className="flex gap-6">
@@ -130,7 +152,8 @@ export function Footer() {
               <motion.a
                 key={social}
                 href="#"
-                className="text-sm text-[#E5E5E5] hover:text-[#FF6B35] transition-colors"
+                className="text-sm hover:text-[#FF6B35] transition-colors"
+                style={{ color: textColor }}
                 whileHover={{ y: -2, scale: 1.05 }}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
