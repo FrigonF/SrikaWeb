@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import srikaLogo from 'figma:asset/c747d6d96990890bd789785b95a615e84765703f.png';
 import srikaLogoDark from 'figma:asset/7060f5fc25b3908b409101a209d52cdb1a735129.png';
 import { useTheme } from '../contexts/ThemeContext';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
+import { supabase } from '../utils/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export function Navigation() {
   const [activeLink, setActiveLink] = useState<string | null>(null);
@@ -11,6 +13,50 @@ export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { scrollY } = useScroll();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPlan = async (userId: string) => {
+      const { data } = await supabase
+        .from('subscriptions')
+        .select('plan')
+        .eq('user_id', userId)
+        .single();
+      if (data) setPlan(data.plan);
+    };
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchPlan(session.user.id);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchPlan(session.user.id);
+      } else {
+        setPlan(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   // Track scroll for glass intensification
   useEffect(() => {
@@ -276,38 +322,68 @@ export function Navigation() {
                 ))}
               </div>
 
-              {/* Desktop CTA Button with premium glass */}
-              <motion.a
-                href="#contact"
-                className="hidden md:flex relative px-8 py-3 text-sm font-bold rounded-full overflow-hidden group items-center"
-                whileHover={{
-                  scale: 1.05,
-                }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              >
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  animate={{
-                    backgroundColor: isDark ? '#FF6B35' : '#000000',
-                    boxShadow: isDark
-                      ? '0 8px 32px rgba(255,107,53,0.7), inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -1px 2px rgba(0,0,0,0.25)'
-                      : '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -1px 2px rgba(0,0,0,0.15)',
-                  }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{
-                    backgroundColor: '#FF6B35',
-                  }}
-                />
-                <motion.span
-                  className="relative z-10"
-                  animate={{
-                    color: isDark ? '#000000' : '#ffffff',
-                  }}
-                >
-                  Get Started
-                </motion.span>
-              </motion.a>
+              {/* Desktop CTA/Auth Button */}
+              <div className="hidden md:flex items-center gap-4">
+                {user ? (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+                      <User size={16} className={isDark ? "text-white" : "text-black"} />
+                      <div className="flex flex-col items-start leading-tight">
+                        <span className={`text-[10px] uppercase tracking-wider font-bold ${plan === 'PAID' ? 'text-orange-500' : 'text-gray-400'}`}>
+                          {plan || '...'}
+                        </span>
+                        <span className={`text-xs font-medium ${isDark ? "text-white" : "text-black"}`}>
+                          {user.email?.split('@')[0]}
+                        </span>
+                      </div>
+                    </div>
+                    <motion.button
+                      onClick={handleLogout}
+                      className="p-3 rounded-full relative overflow-hidden group"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <motion.div
+                        className="absolute inset-0"
+                        animate={{
+                          backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                        }}
+                      />
+                      <LogOut size={20} className={isDark ? "text-white" : "text-black"} />
+                    </motion.button>
+                  </div>
+                ) : (
+                  <motion.button
+                    onClick={handleLogin}
+                    className="relative px-8 py-3 text-sm font-bold rounded-full overflow-hidden group items-center"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-full"
+                      animate={{
+                        backgroundColor: isDark ? '#FF6B35' : '#000000',
+                        boxShadow: isDark
+                          ? '0 8px 32px rgba(255,107,53,0.7), inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -1px 2px rgba(0,0,0,0.25)'
+                          : '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.25), inset 0 -1px 2px rgba(0,0,0,0.15)',
+                      }}
+                      transition={{ duration: 0.3 }}
+                      whileHover={{
+                        backgroundColor: '#FF6B35',
+                      }}
+                    />
+                    <motion.span
+                      className="relative z-10"
+                      animate={{
+                        color: isDark ? '#000000' : '#ffffff',
+                      }}
+                    >
+                      Sign In
+                    </motion.span>
+                  </motion.button>
+                )}
+              </div>
 
               {/* Mobile Menu Toggle */}
               <motion.button
