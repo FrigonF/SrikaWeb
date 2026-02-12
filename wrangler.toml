@@ -1,0 +1,23 @@
+name = "srika-auth"
+type = "javascript"
+account_id = "your_account_id_here"
+workers_dev = true
+compatibility_date = "2024-02-03"
+
+[env.production]
+vars = { VITE_GOOGLE_CLIENT_ID = "your_google_client_id" }
+name = "srika-auth-production"
+route = "srika.pages.dev/*"
+
+[env.development]
+vars = { VITE_GOOGLE_CLIENT_ID = "your_google_client_id_dev" }
+name = "srika-auth-development"
+
+[[env.production.routes]]
+pattern = "srika.pages.dev/api/auth/*"
+zone_name = "pages.dev"
+
+[build]
+command = "npm install && npm run build"
+cwd = "./"
+watch_paths = ["src/**/*.ts", "functions/**/*.ts"]
