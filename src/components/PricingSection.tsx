@@ -1,11 +1,159 @@
 import { motion } from 'motion/react';
 import { Check } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useEffect, useState } from 'react';
 
-const plans = [
+interface PricingPlan {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  cta: string;
+  highlighted: boolean;
+}
+
+// Pricing templates by country
+const pricingTemplates: { [key: string]: PricingPlan[] } = {
+  IN: [ // India - Rupees
+    {
+      name: 'Free',
+      price: '₹0',
+      period: 'forever',
+      description: 'Perfect for trying SRIKA',
+      features: [
+        'Basic motion tracking',
+        '720p camera support',
+        'Single user',
+        'Community support',
+        '5 custom gestures',
+      ],
+      cta: 'Get Started',
+      highlighted: false,
+    },
+    {
+      name: 'Gamer',
+      price: '₹199',
+      period: 'month',
+      description: 'For serious gamers',
+      features: [
+        'Advanced motion tracking',
+        '1080p camera support',
+        'Unlimited gestures',
+        'Low latency mode',
+        'Priority support',
+        'Game integrations',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: false,
+    },
+    {
+      name: 'Pro',
+      price: '₹499',
+      period: 'month',
+      description: 'For professional use',
+      features: [
+        'Professional tracking',
+        '4K camera support',
+        'Multi-user support',
+        'SDK access',
+        'Custom integrations',
+        'Dedicated support',
+        'Commercial license',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: true,
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: 'pricing',
+      description: 'For organizations',
+      features: [
+        'Everything in Pro',
+        'Unlimited users',
+        'On-premise deployment',
+        'Custom AI training',
+        'SLA guarantee',
+        'Account manager',
+      ],
+      cta: 'Contact Sales',
+      highlighted: false,
+    },
+  ],
+  US: [ // USA - Dollars
+    {
+      name: 'Free',
+      price: '$0',
+      period: 'forever',
+      description: 'Perfect for trying SRIKA',
+      features: [
+        'Basic motion tracking',
+        '720p camera support',
+        'Single user',
+        'Community support',
+        '5 custom gestures',
+      ],
+      cta: 'Get Started',
+      highlighted: false,
+    },
+    {
+      name: 'Gamer',
+      price: '$2.99',
+      period: 'month',
+      description: 'For serious gamers',
+      features: [
+        'Advanced motion tracking',
+        '1080p camera support',
+        'Unlimited gestures',
+        'Low latency mode',
+        'Priority support',
+        'Game integrations',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: false,
+    },
+    {
+      name: 'Pro',
+      price: '$8.99',
+      period: 'month',
+      description: 'For professional use',
+      features: [
+        'Professional tracking',
+        '4K camera support',
+        'Multi-user support',
+        'SDK access',
+        'Custom integrations',
+        'Dedicated support',
+        'Commercial license',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: true,
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: 'pricing',
+      description: 'For organizations',
+      features: [
+        'Everything in Pro',
+        'Unlimited users',
+        'On-premise deployment',
+        'Custom AI training',
+        'SLA guarantee',
+        'Account manager',
+      ],
+      cta: 'Contact Sales',
+      highlighted: false,
+    },
+  ],
+};
+
+// Default pricing for other countries (in USD as fallback)
+const defaultPlans: PricingPlan[] = [
   {
     name: 'Free',
-    price: '₹0',
+    price: '$0',
     period: 'forever',
     description: 'Perfect for trying SRIKA',
     features: [
@@ -20,7 +168,7 @@ const plans = [
   },
   {
     name: 'Gamer',
-    price: '₹499',
+    price: '$2.99',
     period: 'month',
     description: 'For serious gamers',
     features: [
@@ -36,7 +184,7 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '₹1,499',
+    price: '$8.99',
     period: 'month',
     description: 'For professional use',
     features: [
@@ -71,6 +219,32 @@ const plans = [
 
 export function PricingSection() {
   const { isDark } = useTheme();
+  const [plans, setPlans] = useState<PricingPlan[]>(defaultPlans);
+  const [country, setCountry] = useState<string>('');
+
+  useEffect(() => {
+    const fetchCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        const countryCode = data.country_code || 'US';
+        setCountry(countryCode);
+
+        // Set pricing based on country
+        if (pricingTemplates[countryCode]) {
+          setPlans(pricingTemplates[countryCode]);
+        } else {
+          setPlans(defaultPlans);
+        }
+      } catch (error) {
+        console.error('Error fetching country:', error);
+        // Fallback to default pricing
+        setPlans(defaultPlans);
+      }
+    };
+
+    fetchCountry();
+  }, []);
 
   return (
     <motion.section
@@ -122,7 +296,7 @@ export function PricingSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {plans.map((plan, index) => (
+          {plans.map((plan: PricingPlan, index: number) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -237,7 +411,7 @@ export function PricingSection() {
               </div>
 
               <ul className="space-y-4 mb-10">
-                {plan.features.map((feature, featureIndex) => (
+                {plan.features.map((feature: string, featureIndex: number) => (
                   <motion.li
                     key={feature}
                     className="flex items-start gap-3 text-sm"
@@ -275,30 +449,38 @@ export function PricingSection() {
               </ul>
 
               <motion.a
-                href="#contact"
-                whileHover={{
+                href={plan.name === 'Gamer' || plan.name === 'Pro' ? '#' : '#contact'}
+                whileHover={plan.name !== 'Gamer' && plan.name !== 'Pro' ? {
                   scale: 1.05,
                   backgroundColor: "#FF6B35",
                   borderColor: "#FF6B35",
                   color: "#ffffff",
                   boxShadow: "0 8px 25px rgba(255,107,53,0.4)"
-                }}
-                whileTap={{ scale: 0.98 }}
+                } : {}}
+                whileTap={plan.name !== 'Gamer' && plan.name !== 'Pro' ? { scale: 0.98 } : {}}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="block w-full px-6 py-4 rounded-full font-medium text-center border-2"
+                className={`block w-full px-6 py-4 rounded-full font-medium text-center border-2 ${
+                  plan.name === 'Gamer' || plan.name === 'Pro' ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                }`}
                 animate={{
-                  backgroundColor: plan.highlighted
+                  backgroundColor: plan.name === 'Gamer' || plan.name === 'Pro'
+                    ? (isDark ? '#333333' : '#E5E5E5')
+                    : plan.highlighted
                     ? (isDark ? '#000000' : '#ffffff')
                     : (isDark ? '#ffffff' : '#000000'),
-                  color: plan.highlighted
+                  color: plan.name === 'Gamer' || plan.name === 'Pro'
+                    ? (isDark ? '#666666' : '#999999')
+                    : plan.highlighted
                     ? (isDark ? '#ffffff' : '#000000')
                     : (isDark ? '#000000' : '#ffffff'),
-                  borderColor: plan.highlighted
+                  borderColor: plan.name === 'Gamer' || plan.name === 'Pro'
+                    ? (isDark ? '#444444' : '#CCCCCC')
+                    : plan.highlighted
                     ? (isDark ? '#000000' : '#ffffff')
                     : (isDark ? '#ffffff' : '#000000')
                 }}
               >
-                {plan.cta}
+                {plan.name === 'Gamer' || plan.name === 'Pro' ? 'Coming Soon' : plan.cta}
               </motion.a>
             </motion.div>
           ))}

@@ -51,7 +51,7 @@ export function VideoBackground({
         <div
           className="absolute inset-0 transition-opacity duration-1000"
           style={{
-            background: 'radial-gradient(circle at center, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0.8) 100%)',
+            background: 'radial-gradient(circle at center, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.5) 100%)',
             pointerEvents: 'none'
           }}
         />

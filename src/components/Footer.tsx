@@ -10,7 +10,8 @@ export function Footer() {
 
   return (
     <motion.footer
-      className="py-16 border-t-2"
+      className="py-16 border-t-2 backdrop-blur-lg"
+      style={{ backdropFilter: 'blur(15px)' }}
       animate={{
         backgroundColor: 'transparent',
         borderTopColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'

@@ -325,33 +325,100 @@ export function Navigation() {
               {/* Desktop CTA/Auth Button */}
               <div className="hidden md:flex items-center gap-4">
                 {user ? (
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-                      <User size={16} className={isDark ? "text-white" : "text-black"} />
-                      <div className="flex flex-col items-start leading-tight">
-                        <span className={`text-[10px] uppercase tracking-wider font-bold ${plan === 'PAID' ? 'text-orange-500' : 'text-gray-400'}`}>
-                          {plan || '...'}
-                        </span>
-                        <span className={`text-xs font-medium ${isDark ? "text-white" : "text-black"}`}>
-                          {user.email?.split('@')[0]}
-                        </span>
-                      </div>
-                    </div>
-                    <motion.button
-                      onClick={handleLogout}
-                      className="p-3 rounded-full relative overflow-hidden group"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                  <motion.div className="relative group">
+                    {/* Profile Picture Circle */}
+                    <motion.div
+                      className="w-12 h-12 rounded-full overflow-hidden cursor-pointer border-2 border-white/20 hover:border-white/40 transition-all"
+                      whileHover={{ scale: 1.05 }}
+                      animate={{
+                        borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      {user.user_metadata?.picture ? (
+                        <img
+                          src={user.user_metadata.picture}
+                          alt={user.email}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white'}`}>
+                          {user.email?.[0].toUpperCase()}
+                        </div>
+                      )}
+                    </motion.div>
+
+                    {/* Hover Dropdown Menu */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      whileHover={{ opacity: 1, y: 0, scale: 1 }}
+                      className="absolute right-0 mt-2 w-56 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50"
                     >
                       <motion.div
-                        className="absolute inset-0"
-                        animate={{
-                          backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                        className="rounded-2xl overflow-hidden"
+                        style={{
+                          filter: isDark
+                            ? 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.8))'
+                            : 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.15))',
                         }}
-                      />
-                      <LogOut size={20} className={isDark ? "text-white" : "text-black"} />
-                    </motion.button>
-                  </div>
+                      >
+                        {/* Backdrop blur */}
+                        <motion.div
+                          className="absolute inset-0 rounded-2xl"
+                          style={{
+                            WebkitBackdropFilter: 'blur(20px) saturate(200%)',
+                            backdropFilter: 'blur(20px) saturate(200%)',
+                            backgroundColor: isDark ? 'rgba(20, 20, 20, 0.8)' : 'rgba(255, 255, 255, 0.85)',
+                          }}
+                        />
+
+                        {/* Content */}
+                        <div className="relative p-4 space-y-4">
+                          {/* User Info */}
+                          <div className="space-y-2">
+                            <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                              Email
+                            </p>
+                            <p className={`text-sm font-medium break-all ${isDark ? 'text-white' : 'text-black'}`}>
+                              {user.email}
+                            </p>
+                          </div>
+
+                          {/* Subscription Type */}
+                          <div className="space-y-2">
+                            <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                              Subscription
+                            </p>
+                            <motion.div
+                              animate={{
+                                backgroundColor: plan === 'PAID' ? (isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)') : (isDark ? 'rgba(107,114,128,0.2)' : 'rgba(107,114,128,0.1)')
+                              }}
+                              className="px-3 py-1.5 rounded-full inline-block"
+                            >
+                              <span className={`text-xs font-bold ${plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-300' : 'text-gray-600')}`}>
+                                {plan || 'Free'}
+                              </span>
+                            </motion.div>
+                          </div>
+
+                          {/* Logout Button */}
+                          <motion.button
+                            onClick={handleLogout}
+                            className="w-full mt-4 px-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 relative overflow-hidden group/btn"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            animate={{
+                              backgroundColor: isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)',
+                              color: isDark ? '#FF6B35' : '#FF6B35',
+                              border: `1px solid ${isDark ? 'rgba(255,107,53,0.3)' : 'rgba(255,107,53,0.2)'}`
+                            }}
+                          >
+                            <LogOut size={16} />
+                            <span>Log Out</span>
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
                 ) : (
                   <motion.button
                     onClick={handleLogin}
