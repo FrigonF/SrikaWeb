@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import srikaLogo from 'figma:asset/c747d6d96990890bd789785b95a615e84765703f.png';
 import srikaLogoDark from 'figma:asset/7060f5fc25b3908b409101a209d52cdb1a735129.png';
 import { useTheme } from '../contexts/ThemeContext';
-import { Menu, X, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User, Mail, Crown } from 'lucide-react';
 import { supabase } from '../utils/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -384,70 +384,161 @@ export function Navigation() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           transition={{ duration: 0.2 }}
-                          className="absolute right-0 mt-2 w-56 z-50"
+                          className="absolute right-0 mt-3 w-72 z-50"
                         >
                           <motion.div
-                            className="rounded-2xl overflow-hidden"
+                            className="rounded-3xl overflow-hidden"
                             style={{
                               filter: isDark
-                                ? 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.8))'
-                                : 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.15))',
+                                ? 'drop-shadow(0 12px 40px rgba(0, 0, 0, 0.9))'
+                                : 'drop-shadow(0 12px 40px rgba(0, 0, 0, 0.18))',
                             }}
                           >
                             {/* Backdrop blur */}
                             <motion.div
-                              className="absolute inset-0 rounded-2xl"
+                              className="absolute inset-0 rounded-3xl"
                               style={{
-                                WebkitBackdropFilter: 'blur(20px) saturate(200%)',
-                                backdropFilter: 'blur(20px) saturate(200%)',
-                                backgroundColor: isDark ? 'rgba(20, 20, 20, 0.8)' : 'rgba(255, 255, 255, 0.85)',
+                                WebkitBackdropFilter: 'blur(30px) saturate(220%)',
+                                backdropFilter: 'blur(30px) saturate(220%)',
+                                backgroundColor: isDark ? 'rgba(15, 15, 20, 0.85)' : 'rgba(255, 255, 255, 0.9)',
+                              }}
+                            />
+
+                            {/* Gradient border effect */}
+                            <motion.div
+                              className="absolute inset-0 rounded-3xl"
+                              style={{
+                                background: isDark
+                                  ? 'linear-gradient(135deg, rgba(255,107,53,0.1) 0%, rgba(107, 178, 255, 0.05) 100%)'
+                                  : 'linear-gradient(135deg, rgba(255,107,53,0.08) 0%, rgba(107, 178, 255, 0.04) 100%)',
+                                pointer: 'none'
                               }}
                             />
 
                             {/* Content */}
-                            <div className="relative p-4 space-y-4">
-                              {/* User Info */}
-                              <div className="space-y-2">
-                                <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Email
-                                </p>
-                                <p className={`text-sm font-medium break-all ${isDark ? 'text-white' : 'text-black'}`}>
-                                  {user.email}
-                                </p>
-                              </div>
-
-                              {/* Subscription Type */}
-                              <div className="space-y-2">
-                                <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Subscription
-                                </p>
+                            <div className="relative p-6 space-y-5">
+                              {/* Profile Header */}
+                              <motion.div
+                                className="flex items-center gap-3 pb-4 border-b"
+                                animate={{
+                                  borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
+                                }}
+                              >
                                 <motion.div
+                                  className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
                                   animate={{
-                                    backgroundColor: plan === 'PAID' ? (isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)') : (isDark ? 'rgba(107,114,128,0.2)' : 'rgba(107,114,128,0.1)')
+                                    background: isDark
+                                      ? 'linear-gradient(135deg, rgba(255,107,53,0.3) 0%, rgba(107, 178, 255, 0.2) 100%)'
+                                      : 'linear-gradient(135deg, rgba(255,107,53,0.2) 0%, rgba(107, 178, 255, 0.1) 100%)'
                                   }}
-                                  className="px-3 py-1.5 rounded-full inline-block"
                                 >
-                                  <span className={`text-xs font-bold ${plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-300' : 'text-gray-600')}`}>
-                                    {plan || 'Free'}
+                                  {profilePicture && !showFallback ? (
+                                    <img
+                                      src={profilePicture}
+                                      alt={user?.email}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className={`text-lg font-bold ${isDark ? 'text-orange-400' : 'text-orange-500'}`}>
+                                      {user?.email?.[0].toUpperCase()}
+                                    </span>
+                                  )}
+                                </motion.div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-bold truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+                                  </p>
+                                  <p className={`text-xs truncate ${isDark ? 'text-gray-500' : 'text-gray-600'}`}>
+                                    {user?.email}
+                                  </p>
+                                </div>
+                              </motion.div>
+
+                              {/* Email Section */}
+                              <motion.div
+                                className="space-y-2.5"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.05 }}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Mail size={16} className={isDark ? 'text-gray-500' : 'text-gray-600'} />
+                                  <p className={`text-xs uppercase tracking-wider font-semibold ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>
+                                    Email Address
+                                  </p>
+                                </div>
+                                <motion.div
+                                  className="px-3.5 py-2.5 rounded-xl backdrop-blur-sm"
+                                  animate={{
+                                    backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'
+                                  }}
+                                >
+                                  <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {user?.email}
+                                  </p>
+                                </motion.div>
+                              </motion.div>
+
+                              {/* Subscription Section */}
+                              <motion.div
+                                className="space-y-2.5"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 }}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Crown size={16} className={plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-500' : 'text-gray-600')} />
+                                  <p className={`text-xs uppercase tracking-wider font-semibold ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>
+                                    Plan Status
+                                  </p>
+                                </div>
+                                <motion.div
+                                  className="px-3.5 py-2.5 rounded-xl inline-flex items-center gap-2"
+                                  animate={{
+                                    backgroundColor: plan === 'PAID'
+                                      ? (isDark ? 'rgba(255,107,53,0.15)' : 'rgba(255,107,53,0.12)')
+                                      : (isDark ? 'rgba(107,114,128,0.15)' : 'rgba(107,114,128,0.08)')
+                                  }}
+                                >
+                                  <motion.div
+                                    className="w-2 h-2 rounded-full"
+                                    animate={{
+                                      backgroundColor: plan === 'PAID' ? '#FF6B35' : (isDark ? '#6B7280' : '#9CA3AF')
+                                    }}
+                                  />
+                                  <span className={`text-sm font-bold ${plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-300' : 'text-gray-700')}`}>
+                                    {plan === 'PAID' ? 'Premium' : 'Free'}
                                   </span>
                                 </motion.div>
-                              </div>
+                              </motion.div>
 
                               {/* Logout Button */}
                               <motion.button
                                 onClick={handleLogout}
-                                className="w-full mt-4 px-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 relative overflow-hidden"
+                                className="w-full mt-6 px-4 py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 relative overflow-hidden group"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 animate={{
-                                  backgroundColor: isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)',
-                                  color: isDark ? '#FF6B35' : '#FF6B35',
-                                  border: `1px solid ${isDark ? 'rgba(255,107,53,0.3)' : 'rgba(255,107,53,0.2)'}`
+                                  background: isDark
+                                    ? 'linear-gradient(135deg, rgba(255,107,53,0.25) 0%, rgba(255,107,53,0.15) 100%)'
+                                    : 'linear-gradient(135deg, rgba(255,107,53,0.2) 0%, rgba(255,107,53,0.1) 100%)',
+                                  color: '#FF6B35',
+                                  border: `1.5px solid ${isDark ? 'rgba(255,107,53,0.4)' : 'rgba(255,107,53,0.3)'}`
                                 }}
                               >
-                                <LogOut size={16} />
-                                <span>Log Out</span>
+                                <LogOut size={18} />
+                                <span>Log Out Account</span>
                               </motion.button>
+
+                              {/* Footer hint */}
+                              <motion.p
+                                className={`text-xs text-center ${isDark ? 'text-gray-600' : 'text-gray-500'}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.15 }}
+                              >
+                                You'll be redirected to login
+                              </motion.p>
                             </div>
                           </motion.div>
                         </motion.div>
