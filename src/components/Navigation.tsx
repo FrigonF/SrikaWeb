@@ -11,10 +11,13 @@ export function Navigation() {
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileHovering, setIsProfileHovering] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { scrollY } = useScroll();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [showFallback, setShowFallback] = useState(true);
 
   useEffect(() => {
     const fetchPlan = async (userId: string) => {
@@ -29,16 +32,36 @@ export function Navigation() {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) fetchPlan(session.user.id);
+      if (session?.user) {
+        // Extract picture from user metadata
+        const pictureUrl = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture;
+        if (pictureUrl) {
+          setProfilePicture(pictureUrl);
+          setShowFallback(false);
+        } else {
+          setShowFallback(true);
+        }
+        fetchPlan(session.user.id);
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
+        // Extract picture from user metadata
+        const pictureUrl = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture;
+        if (pictureUrl) {
+          setProfilePicture(pictureUrl);
+          setShowFallback(false);
+        } else {
+          setShowFallback(true);
+        }
         fetchPlan(session.user.id);
       } else {
         setPlan(null);
+        setProfilePicture(null);
+        setShowFallback(true);
       }
     });
 
@@ -325,7 +348,11 @@ export function Navigation() {
               {/* Desktop CTA/Auth Button */}
               <div className="hidden md:flex items-center gap-4">
                 {user ? (
-                  <motion.div className="relative group">
+                  <motion.div 
+                    className="relative"
+                    onMouseEnter={() => setIsProfileHovering(true)}
+                    onMouseLeave={() => setIsProfileHovering(false)}
+                  >
                     {/* Profile Picture Circle */}
                     <motion.div
                       className="w-12 h-12 rounded-full overflow-hidden cursor-pointer border-2 border-white/20 hover:border-white/40 transition-all"
@@ -334,90 +361,97 @@ export function Navigation() {
                         borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
                       }}
                     >
-                      {user.user_metadata?.picture ? (
+                      {profilePicture && !showFallback ? (
                         <img
-                          src={user.user_metadata.picture}
-                          alt={user.email}
+                          src={profilePicture}
+                          alt={user?.email}
                           className="w-full h-full object-cover"
+                          onError={() => setShowFallback(true)}
                         />
                       ) : (
                         <div className={`w-full h-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white'}`}>
-                          {user.email?.[0].toUpperCase()}
+                          {user?.email?.[0].toUpperCase()}
                         </div>
                       )}
                     </motion.div>
 
                     {/* Hover Dropdown Menu */}
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      whileHover={{ opacity: 1, y: 0, scale: 1 }}
-                      className="absolute right-0 mt-2 w-56 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50"
-                    >
-                      <motion.div
-                        className="rounded-2xl overflow-hidden"
-                        style={{
-                          filter: isDark
-                            ? 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.8))'
-                            : 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.15))',
-                        }}
-                      >
-                        {/* Backdrop blur */}
+                    <AnimatePresence>
+                      {isProfileHovering && (
                         <motion.div
-                          className="absolute inset-0 rounded-2xl"
-                          style={{
-                            WebkitBackdropFilter: 'blur(20px) saturate(200%)',
-                            backdropFilter: 'blur(20px) saturate(200%)',
-                            backgroundColor: isDark ? 'rgba(20, 20, 20, 0.8)' : 'rgba(255, 255, 255, 0.85)',
-                          }}
-                        />
-
-                        {/* Content */}
-                        <div className="relative p-4 space-y-4">
-                          {/* User Info */}
-                          <div className="space-y-2">
-                            <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                              Email
-                            </p>
-                            <p className={`text-sm font-medium break-all ${isDark ? 'text-white' : 'text-black'}`}>
-                              {user.email}
-                            </p>
-                          </div>
-
-                          {/* Subscription Type */}
-                          <div className="space-y-2">
-                            <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                              Subscription
-                            </p>
-                            <motion.div
-                              animate={{
-                                backgroundColor: plan === 'PAID' ? (isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)') : (isDark ? 'rgba(107,114,128,0.2)' : 'rgba(107,114,128,0.1)')
-                              }}
-                              className="px-3 py-1.5 rounded-full inline-block"
-                            >
-                              <span className={`text-xs font-bold ${plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-300' : 'text-gray-600')}`}>
-                                {plan || 'Free'}
-                              </span>
-                            </motion.div>
-                          </div>
-
-                          {/* Logout Button */}
-                          <motion.button
-                            onClick={handleLogout}
-                            className="w-full mt-4 px-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 relative overflow-hidden group/btn"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            animate={{
-                              backgroundColor: isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)',
-                              color: isDark ? '#FF6B35' : '#FF6B35',
-                              border: `1px solid ${isDark ? 'rgba(255,107,53,0.3)' : 'rgba(255,107,53,0.2)'}`
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute right-0 mt-2 w-56 z-50"
+                        >
+                          <motion.div
+                            className="rounded-2xl overflow-hidden"
+                            style={{
+                              filter: isDark
+                                ? 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.8))'
+                                : 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.15))',
                             }}
                           >
-                            <LogOut size={16} />
-                            <span>Log Out</span>
-                          </motion.button>
-                        </div>
-                      </motion.div>
-                    </motion.div>
+                            {/* Backdrop blur */}
+                            <motion.div
+                              className="absolute inset-0 rounded-2xl"
+                              style={{
+                                WebkitBackdropFilter: 'blur(20px) saturate(200%)',
+                                backdropFilter: 'blur(20px) saturate(200%)',
+                                backgroundColor: isDark ? 'rgba(20, 20, 20, 0.8)' : 'rgba(255, 255, 255, 0.85)',
+                              }}
+                            />
+
+                            {/* Content */}
+                            <div className="relative p-4 space-y-4">
+                              {/* User Info */}
+                              <div className="space-y-2">
+                                <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Email
+                                </p>
+                                <p className={`text-sm font-medium break-all ${isDark ? 'text-white' : 'text-black'}`}>
+                                  {user.email}
+                                </p>
+                              </div>
+
+                              {/* Subscription Type */}
+                              <div className="space-y-2">
+                                <p className={`text-xs uppercase tracking-wider font-bold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Subscription
+                                </p>
+                                <motion.div
+                                  animate={{
+                                    backgroundColor: plan === 'PAID' ? (isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)') : (isDark ? 'rgba(107,114,128,0.2)' : 'rgba(107,114,128,0.1)')
+                                  }}
+                                  className="px-3 py-1.5 rounded-full inline-block"
+                                >
+                                  <span className={`text-xs font-bold ${plan === 'PAID' ? 'text-orange-500' : (isDark ? 'text-gray-300' : 'text-gray-600')}`}>
+                                    {plan || 'Free'}
+                                  </span>
+                                </motion.div>
+                              </div>
+
+                              {/* Logout Button */}
+                              <motion.button
+                                onClick={handleLogout}
+                                className="w-full mt-4 px-4 py-2.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 relative overflow-hidden"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                animate={{
+                                  backgroundColor: isDark ? 'rgba(255,107,53,0.2)' : 'rgba(255,107,53,0.1)',
+                                  color: isDark ? '#FF6B35' : '#FF6B35',
+                                  border: `1px solid ${isDark ? 'rgba(255,107,53,0.3)' : 'rgba(255,107,53,0.2)'}`
+                                }}
+                              >
+                                <LogOut size={16} />
+                                <span>Log Out</span>
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 ) : (
                   <motion.button
