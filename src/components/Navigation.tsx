@@ -123,7 +123,7 @@ export function Navigation() {
     { href: '#product', label: 'Product' },
     { href: '#features', label: 'Features' },
     { href: '#pricing', label: 'Pricing' },
-    { href: '#alpha-beta', label: 'Alpha & Beta' },
+    { href: '/download', label: 'Download', isRouter: true },
     { href: pathname === '/docs' ? '#' : '/docs', label: 'Docs', isRouter: pathname !== '/' },
     { href: '#about', label: 'About' },
     { href: '#contact', label: 'Contact' },

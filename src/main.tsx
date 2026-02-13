@@ -6,6 +6,7 @@ import { LoginPage } from "./pages/LoginPage.tsx";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage.tsx";
 import { DashboardPage } from "./pages/DashboardPage.tsx";
 import { DocumentationPage } from "./pages/DocumentationPage.tsx";
+import DownloadPage from "./pages/DownloadPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 import "./index.css";
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/docs" element={<DocumentationPage />} />
+        <Route path="/download" element={<DownloadPage />} />
       </Routes>
     </AuthProvider>
   </BrowserRouter>
