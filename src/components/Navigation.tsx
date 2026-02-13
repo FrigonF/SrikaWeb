@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import srikaLogo from 'figma:asset/c747d6d96990890bd789785b95a615e84765703f.png';
 import srikaLogoDark from 'figma:asset/7060f5fc25b3908b409101a209d52cdb1a735129.png';
 import { useTheme } from '../contexts/ThemeContext';
@@ -14,6 +15,8 @@ export function Navigation() {
   const [isProfileHovering, setIsProfileHovering] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { scrollY } = useScroll();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -102,12 +105,26 @@ export function Navigation() {
     };
   }, [isMenuOpen]);
 
+  const handleHashLinkClick = (anchorId: string) => {
+    if (pathname !== '/') {
+      navigate('/');
+      // Delay scroll to allow navigation to complete
+      setTimeout(() => {
+        const element = document.getElementById(anchorId.substring(1));
+        element?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const element = document.getElementById(anchorId.substring(1));
+      element?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const navLinks = [
     { href: '#product', label: 'Product' },
     { href: '#features', label: 'Features' },
     { href: '#pricing', label: 'Pricing' },
     { href: '#alpha-beta', label: 'Alpha & Beta' },
-    { href: '#docs', label: 'Docs' },
+    { href: pathname === '/docs' ? '#' : '/docs', label: 'Docs', isRouter: pathname !== '/' },
     { href: '#about', label: 'About' },
     { href: '#contact', label: 'Contact' },
   ];
@@ -297,53 +314,67 @@ export function Navigation() {
 
               {/* Desktop Nav Links with enhanced contrast */}
               <div className="hidden md:flex items-center gap-1 relative">
-                {navLinks.map((link) => (
-                  <motion.a
-                    key={link.href}
-                    href={link.href}
-                    className="px-4 py-2.5 text-sm font-semibold relative rounded-full"
-                    animate={{
-                      color: activeLink === link.href
-                        ? (isDark ? '#ffffff' : '#000000')
-                        : (isDark ? '#e5e5e5' : '#4a4a4a')
-                    }}
-                    style={{
-                      textShadow: isDark ? '0 1px 3px rgba(0,0,0,0.8)' : '0 1px 2px rgba(255,255,255,0.9)',
-                    }}
-                    transition={{ duration: 0.3 }}
-                    whileHover={{
-                      y: -2,
-                      color: isDark ? '#ffffff' : '#000000',
-                    }}
-                    onMouseEnter={() => setActiveLink(link.href)}
-                    onMouseLeave={() => setActiveLink(null)}
-                  >
-                    {/* Hover pill with glass effect */}
-                    {activeLink === link.href && (
-                      <motion.div
-                        layoutId="navHoverPill"
-                        className="absolute inset-0 rounded-full"
-                        animate={{
-                          backgroundColor: isDark
-                            ? 'rgba(255, 255, 255, 0.18)'
-                            : 'rgba(0, 0, 0, 0.12)',
-                          boxShadow: isDark
-                            ? '0 0 24px rgba(255,107,53,0.35), inset 0 1px 1px rgba(255,255,255,0.25), inset 0 -1px 1px rgba(0,0,0,0.25)'
-                            : '0 0 16px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 1px rgba(0,0,0,0.12)',
-                        }}
-                        style={{
-                          backdropFilter: 'blur(8px)',
-                        }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30
-                        }}
-                      />
-                    )}
-                    <span className="relative z-10">{link.label}</span>
-                  </motion.a>
-                ))}
+                {navLinks.map((link) => {
+                  const isHashLink = link.href.startsWith('#');
+                  const LinkComponent = link.isRouter ? motion(Link) : motion.a;
+                  const linkProps = link.isRouter 
+                    ? { to: link.href }
+                    : { href: link.href };
+
+                  const handleClick = isHashLink ? (e: any) => {
+                    e.preventDefault();
+                    handleHashLinkClick(link.href);
+                  } : undefined;
+                  
+                  return (
+                    <LinkComponent
+                      key={link.href}
+                      {...linkProps}
+                      onClick={handleClick}
+                      className="px-4 py-2.5 text-sm font-semibold relative rounded-full"
+                      animate={{
+                        color: activeLink === link.href
+                          ? (isDark ? '#ffffff' : '#000000')
+                          : (isDark ? '#e5e5e5' : '#4a4a4a')
+                      }}
+                      style={{
+                        textShadow: isDark ? '0 1px 3px rgba(0,0,0,0.8)' : '0 1px 2px rgba(255,255,255,0.9)',
+                      }}
+                      transition={{ duration: 0.3 }}
+                      whileHover={{
+                        y: -2,
+                        color: isDark ? '#ffffff' : '#000000',
+                      }}
+                      onMouseEnter={() => setActiveLink(link.href)}
+                      onMouseLeave={() => setActiveLink(null)}
+                    >
+                      {/* Hover pill with glass effect */}
+                      {activeLink === link.href && (
+                        <motion.div
+                          layoutId="navHoverPill"
+                          className="absolute inset-0 rounded-full"
+                          animate={{
+                            backgroundColor: isDark
+                              ? 'rgba(255, 255, 255, 0.18)'
+                              : 'rgba(0, 0, 0, 0.12)',
+                            boxShadow: isDark
+                              ? '0 0 24px rgba(255,107,53,0.35), inset 0 1px 1px rgba(255,255,255,0.25), inset 0 -1px 1px rgba(0,0,0,0.25)'
+                              : '0 0 16px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 1px rgba(0,0,0,0.12)',
+                          }}
+                          style={{
+                            backdropFilter: 'blur(8px)',
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30
+                          }}
+                        />
+                      )}
+                      <span className="relative z-10">{link.label}</span>
+                    </LinkComponent>
+                  );
+                })}
               </div>
 
               {/* Desktop CTA/Auth Button */}
@@ -657,27 +688,57 @@ export function Navigation() {
 
                 {/* Nav Links */}
                 <div className="flex flex-col gap-4">
-                  {navLinks.map((link, i) => (
-                    <motion.a
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      initial={{ x: 20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 + i * 0.05 }}
-                      className={`text-xl font-bold py-4 border-b ${isDark ? "text-white border-white/10" : "text-black border-black/5"
-                        }`}
-                    >
-                      {link.label}
-                    </motion.a>
-                  ))}
+                  {navLinks.map((link, i) => {
+                    if (link.isRouter) {
+                      const MotionLink = motion(Link);
+                      return (
+                        <MotionLink
+                          key={link.href}
+                          to={link.href}
+                          onClick={() => setIsMenuOpen(false)}
+                          initial={{ x: 20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.1 + i * 0.05 }}
+                          className={`text-xl font-bold py-4 border-b ${isDark ? "text-white border-white/10" : "text-black border-black/5"
+                            }`}
+                        >
+                          {link.label}
+                        </MotionLink>
+                      );
+                    }
+                    const isHashLink = link.href.startsWith('#');
+                    return (
+                      <motion.a
+                        key={link.href}
+                        href={link.href}
+                        onClick={(e) => {
+                          setIsMenuOpen(false);
+                          if (isHashLink) {
+                            e.preventDefault();
+                            handleHashLinkClick(link.href);
+                          }
+                        }}
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 + i * 0.05 }}
+                        className={`text-xl font-bold py-4 border-b ${isDark ? "text-white border-white/10" : "text-black border-black/5"
+                          }`}
+                      >
+                        {link.label}
+                      </motion.a>
+                    );
+                  })}
                 </div>
 
                 {/* Footer of Sidebar */}
                 <div className="mt-auto pt-8">
                   <motion.a
                     href="#contact"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsMenuOpen(false);
+                      handleHashLinkClick('#contact');
+                    }}
                     className="w-full flex items-center justify-center py-5 rounded-2xl bg-[#FF6B35] text-white font-bold text-lg shadow-lg"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

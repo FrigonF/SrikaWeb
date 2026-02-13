@@ -6,7 +6,6 @@ import { UseCasesSection } from './components/UseCasesSection';
 import { ProductPreview } from './components/ProductPreview';
 import { AlphaBetaSection } from './components/AlphaBetaSection';
 import { PricingSection } from './components/PricingSection';
-import { DocumentationSection } from './components/DocumentationSection';
 import { RoadmapSection } from './components/RoadmapSection';
 import { AboutSection } from './components/AboutSection';
 import { ContactSection } from './components/ContactSection';
@@ -38,6 +37,9 @@ function AppContent() {
           {/* Hero - dynamic but safe */}
           <HeroSection />
 
+          {/* Product Preview - video below hero buttons */}
+          <ProductPreview />
+
           {/* Features - grid with entrance animations */}
           <FeaturesSection />
 
@@ -47,17 +49,11 @@ function AppContent() {
           {/* Use Cases - tabbed, click-based */}
           <UseCasesSection />
 
-          {/* Product Preview - single centered mockup */}
-          <ProductPreview />
-
           {/* Alpha & Beta - two columns */}
           <AlphaBetaSection />
 
           {/* Pricing - 4 cards */}
           <PricingSection />
-
-          {/* Documentation - simple list */}
-          <DocumentationSection />
 
           {/* Roadmap - vertical list */}
           <RoadmapSection />
