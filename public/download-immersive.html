@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRIKA — Install</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --accent: #FF6B35;
+      --accent-glow: rgba(255, 107, 53, 0.4);
+      --text-primary: #ffffff;
+      --text-secondary: #888888;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --bg-dark: #0a0a0a;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0f05 100%);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Animated Background */
+    .bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .gradient-mesh {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -200px;
+      right: -200px;
+      animation: drift 12s ease-in-out infinite;
+    }
+
+    .gradient-mesh-2 {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -300px;
+      left: -300px;
+      animation: drift 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(40px, -40px); }
+    }
+
+    /* Particles */
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float-particle 20s linear infinite;
+    }
+
+    @keyframes float-particle {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      padding: 2rem;
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Initialization Phase */
+    .init-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      z-index: 100;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0f05 100%);
+      animation: fade-out 0.6s ease-out 1.5s forwards;
+    }
+
+    @keyframes fade-out {
+      to {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    .logo-glow {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, var(--accent), #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        text-shadow: 0 0 20px var(--accent-glow);
+        opacity: 1;
+      }
+      50% {
+        text-shadow: 0 0 40px var(--accent-glow);
+        opacity: 0.9;
+      }
+    }
+
+    .init-text {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      height: 1.5rem;
+      min-width: 350px;
+    }
+
+    .init-text .cursor {
+      animation: blink 1s infinite;
+      margin-left: 2px;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Main Content - Initially Hidden */
+    .main-content {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      opacity: 0;
+      animation: fade-in 0.8s ease-out 1.5s forwards;
+    }
+
+    @keyframes fade-in {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      width: 100%;
+      max-width: 1200px;
+      align-items: center;
+    }
+
+    /* Left Column - Install Panel */
+    .install-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 3rem;
+      backdrop-filter: blur(20px);
+      animation: slide-up 0.8s ease-out 1.8s backwards;
+      box-shadow: 0 0 60px var(--accent-glow);
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .window-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .windows-logo {
+      font-size: 2.5rem;
+    }
+
+    .header-text h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .header-text p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .info-value.accent {
+      color: var(--accent);
+    }
+
+    /* Install Button */
+    .install-btn {
+      width: 100%;
+      padding: 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 30px var(--accent-glow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .install-btn:hover:not(.installing) {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px var(--accent-glow);
+    }
+
+    .install-btn:active:not(.installing) {
+      transform: translateY(0);
+    }
+
+    .install-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
+    }
+
+    .install-btn.installing {
+      pointer-events: none;
+      background: linear-gradient(90deg, var(--accent), var(--accent) 0%, rgba(255, 107, 53, 0.5) 100%);
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 12px;
+      width: 0%;
+      z-index: -1;
+      animation: none;
+    }
+
+    .install-btn.installing .progress-fill {
+      animation: progress-animation 3s ease-out forwards;
+      z-index: 1;
+    }
+
+    @keyframes progress-animation {
+      0% { width: 0%; }
+      85% { width: 85%; }
+      100% { width: 100%; }
+    }
+
+    .btn-text {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Right Column - Coming Soon */
+    .macos-section {
+      animation: slide-up 0.8s ease-out 1.9s backwards;
+    }
+
+    .macos-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .macos-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%);
+      animation: shimmer-slide 4s infinite;
+    }
+
+    @keyframes shimmer-slide {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .apple-logo {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+      animation: float-apple 3s ease-in-out infinite;
+    }
+
+    @keyframes float-apple {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .macos-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .coming-soon-text {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* System Requirements */
+    .requirements-section {
+      margin-top: 6rem;
+      padding-top: 4rem;
+      border-top: 1px solid var(--glass-border);
+      animation: slide-up 0.8s ease-out 2s backwards;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .requirements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .req-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .req-item:hover {
+      border-color: var(--accent);
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .req-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .req-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .req-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .macos-section {
+        order: 2;
+      }
+
+      .requirements-section {
+        order: 3;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .install-panel,
+      .macos-card {
+        padding: 2rem;
+      }
+
+      .window-header {
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .header-text h2 {
+        font-size: 1.2rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .install-btn {
+        padding: 1.25rem;
+        font-size: 1rem;
+      }
+
+      .init-text {
+        min-width: auto;
+        max-width: 90vw;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <div class="bg-container">
+    <div class="gradient-mesh"></div>
+    <div class="gradient-mesh-2"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <!-- Initialization Screen -->
+  <div class="init-screen">
+    <div class="logo-glow">SRIKA</div>
+    <div class="init-text">
+      Initializing SRIKA for Windows<span class="cursor">_</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="content-wrapper">
+      <!-- Install Panel -->
+      <div class="install-panel">
+        <div class="window-header">
+          <div class="windows-logo">🪟</div>
+          <div class="header-text">
+            <h2>SRIKA Engine</h2>
+            <p>Windows Build</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Version</div>
+            <div class="info-value accent">v1.0</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Build Size</div>
+            <div class="info-value">248 MB</div>
+          </div>
+        </div>
+
+        <button class="install-btn" id="installBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7 10 12 15 17 10" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="btn-text">Install SRIKA</span>
+          <div class="progress-fill"></div>
+        </button>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+          Installation takes ~2 minutes • Auto-updates enabled
+        </p>
+      </div>
+
+      <!-- macOS Coming Soon -->
+      <div class="macos-section">
+        <div class="macos-card">
+          <div class="apple-logo">🍎</div>
+          <h3>macOS</h3>
+          <p class="coming-soon-text">Coming Soon • Spring 2025</p>
+        </div>
+      </div>
+
+      <!-- System Requirements -->
+      <div class="requirements-section">
+        <div class="section-title">System Requirements</div>
+        <div class="requirements-grid">
+          <div class="req-item">
+            <div class="req-icon">💻</div>
+            <div class="req-label">CPU</div>
+            <div class="req-value">Modern</div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">🧠</div>
+            <div class="req-label">RAM</div>
+            <div class="req-value">4GB Min</div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">⚡</div>
+            <div class="req-label">GPU</div>
+            <div class="req-value">Dedicated</div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">📷</div>
+            <div class="req-label">Camera</div>
+            <div class="req-value">HD+</div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">💾</div>
+            <div class="req-label">Storage</div>
+            <div class="req-value">500MB</div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">🪟</div>
+            <div class="req-label">OS</div>
+            <div class="req-value">Win 10+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Generate floating particles
+    function generateParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    generateParticles();
+
+    // Install button interaction
+    const installBtn = document.getElementById('installBtn');
+    const btnText = installBtn.querySelector('.btn-text');
+
+    installBtn.addEventListener('click', function() {
+      if (this.classList.contains('installing')) return;
+
+      this.classList.add('installing');
+      btnText.textContent = 'Preparing System…';
+
+      // Simulate installation
+      setTimeout(() => {
+        this.classList.remove('installing');
+        btnText.innerHTML = '✓ Installation Complete';
+
+        setTimeout(() => {
+          btnText.innerHTML = 'Install SRIKA';
+        }, 2500);
+      }, 3500);
+    });
+
+    // Initialization typing effect
+    window.addEventListener('load', () => {
+      // Typing is handled by CSS animation, but we can add cursor blinking
+      const cursor = document.querySelector('.cursor');
+      if (cursor) {
+        // Cursor already blinks via CSS
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRIKA — Desktop Download</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg-0: #0b0a0a;
+      --bg-1: #141111;
+      --bg-2: #1e1a1a;
+      --text-0: #f8f4f1;
+      --text-1: #c9c3bd;
+      --text-2: #7a736d;
+      --pill: #2a2525;
+      --pill-border: rgba(255, 255, 255, 0.08);
+      --button: #f6f2ee;
+      --button-text: #141111;
+      --accent: #6ad786;
+      --ring: rgba(106, 215, 134, 0.2);
+      --nav-bg: rgba(11, 10, 10, 0.85);
+      --nav-border: rgba(255, 255, 255, 0.06);
+    }
+
+    body {
+      font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+      background: var(--bg-0);
+      color: var(--text-0);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(112, 90, 80, 0.35), transparent 55%),
+        radial-gradient(circle at 85% 15%, rgba(50, 46, 42, 0.6), transparent 50%),
+        linear-gradient(160deg, #0b0a0a 0%, #151010 45%, #0b0a0a 100%);
+      z-index: -2;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.08"/></svg>');
+      opacity: 0.4;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav a {
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .nav .logo {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      font-size: 0.95rem;
+      color: var(--text-1);
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 120px 24px 96px;
+      display: grid;
+      gap: 48px;
+      place-items: center;
+      text-align: center;
+    }
+
+    .title {
+      font-family: 'Bebas Neue', 'Impact', sans-serif;
+      font-size: clamp(2.8rem, 10vw, 6.2rem);
+      letter-spacing: 0.02em;
+      line-height: 0.95;
+      text-transform: uppercase;
+      color: var(--text-0);
+      text-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+      animation: rise 0.9s ease-out forwards;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      color: var(--text-1);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      animation: rise 0.9s ease-out 0.12s forwards;
+      opacity: 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--pill-border);
+      background: var(--pill);
+      color: var(--text-1);
+      font-size: 0.9rem;
+      animation: rise 0.9s ease-out 0.2s forwards;
+      opacity: 0;
+    }
+
+    .pill span {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #c873ff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1b0b26;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      animation: rise 0.9s ease-out 0.3s forwards;
+      opacity: 0;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: none;
+      background: var(--button);
+      color: var(--button-text);
+      font-weight: 600;
+      font-size: 0.98rem;
+      text-decoration: none;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .download-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .version {
+      color: var(--text-2);
+      font-size: 0.9rem;
+      animation: rise 0.9s ease-out 0.4s forwards;
+      opacity: 0;
+    }
+
+    .hero-visual {
+      width: min(880px, 95vw);
+      display: grid;
+      place-items: center;
+      position: relative;
+      margin-top: 24px;
+      animation: floatIn 1s ease-out 0.5s forwards;
+      opacity: 0;
+    }
+
+    .green-orb {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      background: var(--accent);
+      border-radius: 50%;
+      right: 10%;
+      top: 18%;
+      box-shadow: 0 0 0 20px var(--ring), 0 40px 80px rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+
+    .app-card {
+      width: min(680px, 95vw);
+      background: linear-gradient(135deg, rgba(44, 40, 39, 0.95), rgba(22, 20, 19, 0.95));
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 18px 20px 28px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .app-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #5a5450;
+    }
+
+    .address {
+      margin-left: auto;
+      background: #1a1716;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      color: #9e9791;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .address span {
+      color: #a2d7b0;
+    }
+
+    .lines {
+      display: grid;
+      gap: 10px;
+    }
+
+    .line {
+      height: 8px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.02));
+    }
+
+    .line.short {
+      width: 60%;
+    }
+
+    .line.tiny {
+      width: 40%;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        padding: 16px 18px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .container {
+        padding: 108px 20px 72px;
+      }
+
+      .green-orb {
+        width: 220px;
+        height: 220px;
+        right: 4%;
+      }
+
+      .app-card {
+        padding: 16px 16px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="noise"></div>
+
+  <header class="nav">
+    <a class="logo" href="/">SRIKA</a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/">Docs</a>
+      <a href="/">Pricing</a>
+      <a href="mailto:support@srika.ai">Support</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1 class="title">SRIKA FOR MAC, WINDOWS &amp; LINUX</h1>
+    <p class="subtitle">Work locally and without distraction with our dedicated desktop app.</p>
+
+    <div class="pill"><span>B</span> Public beta</div>
+
+    <div class="buttons">
+      <a class="download-btn" href="#" aria-label="Download for Mac Intel">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M16.365 1.43c0 1.14-.48 2.24-1.3 3.02-.88.84-2.31 1.49-3.53 1.39-.18-1.1.36-2.3 1.22-3.07.86-.8 2.31-1.42 3.61-1.34zM20.82 20.06c-.5 1.15-.73 1.66-1.37 2.68-1.02 1.61-2.45 3.6-4.2 3.62-1.55.02-1.96-1-3.88-.99-1.91.01-2.37 1.01-3.92 1-1.75-.02-3.07-1.8-4.09-3.41-2.86-4.51-3.16-9.8-1.39-12.5 1.25-1.9 3.23-3.01 5.07-3.01 1.83 0 2.99.99 3.88.99.85 0 2.43-1.22 4.09-1.04.69.03 2.64.28 3.89 2.11-3.42 2-2.87 6.83.92 8.55z"/>
+        </svg>
+        Download for Mac (Intel)
+      </a>
+      <a class="download-btn" href="#" aria-label="Download for Mac Apple Silicon">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M16.365 1.43c0 1.14-.48 2.24-1.3 3.02-.88.84-2.31 1.49-3.53 1.39-.18-1.1.36-2.3 1.22-3.07.86-.8 2.31-1.42 3.61-1.34zM20.82 20.06c-.5 1.15-.73 1.66-1.37 2.68-1.02 1.61-2.45 3.6-4.2 3.62-1.55.02-1.96-1-3.88-.99-1.91.01-2.37 1.01-3.92 1-1.75-.02-3.07-1.8-4.09-3.41-2.86-4.51-3.16-9.8-1.39-12.5 1.25-1.9 3.23-3.01 5.07-3.01 1.83 0 2.99.99 3.88.99.85 0 2.43-1.22 4.09-1.04.69.03 2.64.28 3.89 2.11-3.42 2-2.87 6.83.92 8.55z"/>
+        </svg>
+        Download for Mac (Apple Silicon)
+      </a>
+      <a class="download-btn" href="#" aria-label="Download for Windows">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M2 3l9-1.3v10.8H2V3zm0 11.7h9V25L2 23.7V14.7zm11-12L22 1v11.5h-9V2.7zm0 12h9V25l-9-1.3V14.7z"/>
+        </svg>
+        Download for Windows
+      </a>
+      <a class="download-btn" href="#" aria-label="Download for Linux">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 1.8c-2 0-3.4 1.6-3.4 3.6 0 1.7 1 2.6 1 3.7 0 1-.9 1.7-2.3 1.7C4.8 10.8 3 13 3 15.8c0 3.3 2.5 6.4 9 6.4s9-3.1 9-6.4c0-2.8-1.8-5-4.3-5.3-1.4 0-2.3-.7-2.3-1.7 0-1.1 1-2 1-3.7 0-2-1.4-3.6-3.4-3.6z"/>
+        </svg>
+        Download for Linux
+      </a>
+    </div>
+
+    <div class="version">Version 2024.1.2 (2024-01-06)</div>
+
+    <div class="hero-visual">
+      <div class="green-orb" aria-hidden="true"></div>
+      <div class="app-card">
+        <div class="app-toolbar">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="address">PUT <span>https://srika.app/hello</span></div>
+        </div>
+        <div class="lines">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line tiny"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

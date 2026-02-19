@@ -130,7 +130,10 @@ export function Navigation() {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 pointer-events-none">
+    <div
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 pointer-events-auto"
+      style={{ zIndex: 9999 }}
+    >
       <motion.nav
         className="w-full max-w-6xl pointer-events-auto"
         initial={{ y: -100, opacity: 0 }}
@@ -142,19 +145,21 @@ export function Navigation() {
       >
         {/* Glassmorphism container with strong visibility */}
         <motion.div
-          className="relative rounded-3xl"
+          className="relative rounded-3xl overflow-visible"
           style={{
             filter: isScrolled
               ? 'drop-shadow(0 8px 32px rgba(0, 0, 0, 0.3))'
               : 'drop-shadow(0 4px 24px rgba(0, 0, 0, 0.2))',
-            overflow: 'visible'
           }}
         >
           {/* Backdrop blur layer */}
           <motion.div
             className="absolute inset-0 rounded-3xl"
-            animate={{
+            style={{
               backdropFilter: isScrolled
+                ? 'blur(40px) saturate(200%)'
+                : 'blur(32px) saturate(180%)',
+              WebkitBackdropFilter: isScrolled
                 ? 'blur(40px) saturate(200%)'
                 : 'blur(32px) saturate(180%)',
             }}

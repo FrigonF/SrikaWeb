@@ -1,362 +1,208 @@
-import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { motion, useAnimationControls } from 'motion/react';
+import { useEffect } from 'react';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
-import { ThemeProvider } from '../contexts/ThemeContext';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 import { VideoBackground } from '../components/VideoBackground';
-import { Download, Apple, Monitor, Zap, ArrowDownRight, Sparkles, Cpu } from 'lucide-react';
+import { Apple, Monitor, Smartphone } from 'lucide-react';
 
 function DownloadPageContent() {
   const { isDark } = useTheme();
-  const [selectedOS, setSelectedOS] = useState<string | null>(null);
-  const [hoveredOS, setHoveredOS] = useState<string | null>(null);
+  const underlineControls = useAnimationControls();
 
-  const platforms = [
-    {
-      id: 'windows',
-      name: 'Windows',
-      icon: Monitor,
-      gradient: 'from-blue-500 to-cyan-500',
-      accent: '#0078D4',
-      specs: 'Windows 10+',
-      size: '248 MB',
-    },
-    {
-      id: 'macos',
-      name: 'macOS',
-      icon: Apple,
-      gradient: 'from-slate-700 to-slate-900',
-      accent: '#000000',
-      specs: 'macOS 11+',
-      size: '256 MB',
-    },
-    {
-      id: 'linux',
-      name: 'Linux',
-      icon: Zap,
-      gradient: 'from-orange-500 to-red-600',
-      accent: '#FCC624',
-      specs: 'Ubuntu 20.04+',
-      size: '240 MB',
-    },
-  ];
-
-  const features = [
-    { title: 'Lightning Fast', desc: 'Optimized for speed' },
-    { title: 'Lightweight', desc: 'Minimal resource usage' },
-    { title: 'Always Updated', desc: 'Auto-sync enabled' },
-    { title: 'Secure', desc: 'Enterprise encryption' },
-  ];
+  useEffect(() => {
+    underlineControls.start({
+      pathLength: 1,
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.5 }
+    });
+  }, [underlineControls]);
 
   return (
     <motion.div
-      className={`min-h-screen relative overflow-hidden ${isDark ? 'bg-black' : 'bg-white'}`}
+      className={`min-h-screen overflow-x-hidden ${isDark ? 'bg-slate-950' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50'}`}
     >
       <VideoBackground />
-
       <div className="relative z-10">
         <Navigation />
 
-        <main className="pt-24">
-          {/* Header Section */}
-          <section className="px-4 py-20">
-            <div className="container mx-auto max-w-7xl">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
+        <main className="px-4">
+          <style>{`
+            .download-card {
+              border: 1px solid rgba(148, 163, 184, 0.3);
+              background: rgba(15, 23, 42, 0.45);
+              box-shadow: 0 30px 80px rgba(15, 23, 42, 0.35);
+            }
+
+            .download-glow {
+              background: radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 0.35), transparent 60%);
+            }
+
+            .download-option {
+              position: relative;
+              overflow: hidden;
+              min-width: 240px;
+              justify-content: center;
+            }
+
+            .download-option .label-main {
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+
+            .download-option .label-alt {
+              position: absolute;
+              inset: 0;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              opacity: 0;
+              transform: translateY(6px);
+              transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+
+            .download-option.is-soon:hover .label-main {
+              opacity: 0;
+              transform: translateY(-6px);
+            }
+
+            .download-option.is-soon:hover .label-alt {
+              opacity: 1;
+              transform: translateY(0);
+            }
+
+            .download-option.is-soon {
+              cursor: default;
+            }
+          `}</style>
+          <section className="pt-40 md:pt-52 pb-32 md:pb-48">
+            <div className="max-w-5xl mx-auto text-center">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-center mb-20"
+                className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight"
+                style={{ color: isDark ? '#ffffff' : '#0f172a' }}
               >
-                <motion.div className="mb-6 flex items-center justify-center gap-2">
-                  <Sparkles size={24} className="text-orange-500" />
-                  <span className={`text-sm font-semibold tracking-wider ${isDark ? 'text-orange-400' : 'text-orange-600'}`}>
-                    DOWNLOAD SRIKA
-                  </span>
-                </motion.div>
-
-                <motion.h1
-                  className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight"
-                  animate={{ color: isDark ? '#ffffff' : '#000000' }}
-                >
-                  Get the Power in Your Hands
-                </motion.h1>
-
-                <motion.p
-                  className="text-lg md:text-xl max-w-3xl mx-auto mb-8"
-                  animate={{ color: isDark ? '#aaaaaa' : '#444444' }}
-                >
-                  Experience real-time posture sensing and AI-powered body interface. Choose your platform and join thousands of power users.
-                </motion.p>
-              </motion.div>
-
-              {/* Platform Selection Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
-                {platforms.map((platform, idx) => {
-                  const Icon = platform.icon;
-                  const isSelected = selectedOS === platform.id;
-                  const isHovered = hoveredOS === platform.id;
-
-                  return (
-                    <motion.div
-                      key={platform.id}
-                      initial={{ opacity: 0, y: 40 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.15, duration: 0.6 }}
-                      onMouseEnter={() => setHoveredOS(platform.id)}
-                      onMouseLeave={() => setHoveredOS(null)}
-                    >
-                      <motion.button
-                        onClick={() => setSelectedOS(platform.id)}
-                        className="w-full relative group cursor-pointer rounded-3xl overflow-hidden"
-                        whileTap={{ scale: 0.98 }}
-                        whileHover={{ y: -12 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                      >
-                        {/* Background Gradient */}
-                        <motion.div
-                          className={`absolute inset-0 bg-gradient-to-br ${platform.gradient} opacity-0 group-hover:opacity-100`}
-                          transition={{ duration: 0.4 }}
-                        />
-
-                        {/* Border Glow */}
-                        <motion.div
-                          className="absolute inset-0 rounded-3xl"
-                          animate={{
-                            boxShadow: isHovered || isSelected
-                              ? `0 0 40px ${platform.accent}40, inset 0 0 40px ${platform.accent}20`
-                              : isDark
-                                ? '0 0 0 1px rgba(255, 255, 255, 0.1)'
-                                : '0 0 0 1px rgba(0, 0, 0, 0.1)',
-                          }}
-                          transition={{ duration: 0.3 }}
-                        />
-
-                        {/* Content Container */}
-                        <motion.div
-                          className={`relative p-8 h-full rounded-3xl backdrop-blur-xl transition-all ${
-                            isDark ? 'bg-black/40' : 'bg-white/40'
-                          } ${isSelected || isHovered ? 'border border-white/30' : 'border border-white/10'}`}
-                          animate={{
-                            backgroundColor: isSelected
-                              ? isDark
-                                ? `${platform.accent}15`
-                                : `${platform.accent}10`
-                              : isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
-                          }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Icon */}
-                          <motion.div
-                            className="mb-8 inline-block p-4 rounded-2xl"
-                            animate={{
-                              backgroundColor: isHovered ? `${platform.accent}20` : 'rgba(255,255,255,0.05)',
-                              scale: isHovered ? 1.1 : 1,
-                            }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <Icon size={40} style={{ color: platform.accent }} />
-                          </motion.div>
-
-                          {/* Platform Name */}
-                          <motion.h3
-                            className="text-3xl font-black mb-4"
-                            animate={{ color: isDark ? '#ffffff' : '#000000' }}
-                          >
-                            {platform.name}
-                          </motion.h3>
-
-                          {/* Specs */}
-                          <motion.div
-                            className="text-sm mb-6 space-y-2"
-                            animate={{ color: isDark ? '#999999' : '#666666' }}
-                          >
-                            <p>{platform.specs}</p>
-                            <p>{platform.size}</p>
-                          </motion.div>
-
-                          {/* Selection Indicator */}
-                          <AnimatePresence>
-                            {isSelected && (
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0 }}
-                                className="absolute top-6 right-6 w-3 h-3 rounded-full"
-                                style={{ backgroundColor: platform.accent }}
-                              />
-                            )}
-                          </AnimatePresence>
-
-                          {/* Hover Arrow */}
-                          <motion.div
-                            className="absolute bottom-6 right-6 group-hover:translate-x-2"
-                            animate={{
-                              opacity: isHovered ? 1 : 0,
-                              y: isHovered ? 0 : 8,
-                            }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <ArrowDownRight size={24} style={{ color: platform.accent }} />
-                          </motion.div>
-                        </motion.div>
-                      </motion.button>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Download Button */}
-              <AnimatePresence mode="wait">
-                {selectedOS ? (
-                  <motion.div
-                    key={selectedOS}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="text-center mb-24"
-                  >
-                    <motion.button
-                      className="px-12 py-6 rounded-full font-bold text-lg group relative overflow-hidden inline-flex items-center gap-3"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                DOWNLOAD
+                <br />
+                <span className="relative inline-block">
+                  Now
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 400 20" fill="none">
+                    <motion.path
+                      d="M0 10 Q 200 20 400 10"
+                      stroke="#FF6B35"
+                      strokeWidth="3"
+                      fill="none"
+                      initial={{ pathLength: 0 }}
+                      animate={underlineControls}
                       style={{
-                        backgroundColor: platforms.find(p => p.id === selectedOS)?.accent,
-                        color: '#ffffff',
-                        boxShadow: `0 0 30px ${platforms.find(p => p.id === selectedOS)?.accent}40`,
+                        pathLength: 0,
+                        filter: isDark ? 'drop-shadow(0 0 8px rgba(255,107,53,0.6))' : 'none'
                       }}
-                    >
-                      <motion.div
-                        className="absolute inset-0 rounded-full"
-                        animate={{
-                          boxShadow: `0 0 60px ${platforms.find(p => p.id === selectedOS)?.accent}60`,
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          repeatType: 'reverse',
-                        }}
-                        style={{ opacity: 0.2 }}
-                      />
-                      <Download size={24} className="relative z-10" />
-                      <span className="relative z-10">
-                        Download for {platforms.find(p => p.id === selectedOS)?.name}
-                      </span>
-                    </motion.button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-center mb-24"
-                  >
-                    <motion.p
-                      className="text-lg"
-                      animate={{ color: isDark ? '#666666' : '#999999' }}
-                    >
-                      Select your platform above to download
-                    </motion.p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    />
+                  </svg>
+                </span>
+              </motion.h1>
 
-              {/* Features Grid */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.8 }}
-                className="mb-24"
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
+                className="mt-6 text-lg md:text-xl"
+                style={{ color: isDark ? '#94a3b8' : '#64748b' }}
               >
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {features.map((feature, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="text-center"
-                    >
-                      <motion.div
-                        className="p-4 rounded-2xl mx-auto mb-4 w-fit"
-                        animate={{
-                          backgroundColor: isDark ? 'rgba(255,107,53,0.1)' : 'rgba(255,107,53,0.05)',
-                        }}
-                      >
-                        <Cpu size={28} className="text-orange-500" />
-                      </motion.div>
-                      <motion.h4
-                        className="font-bold mb-2"
-                        animate={{ color: isDark ? '#ffffff' : '#000000' }}
-                      >
-                        {feature.title}
-                      </motion.h4>
-                      <motion.p
-                        className="text-sm"
-                        animate={{ color: isDark ? '#999999' : '#666666' }}
-                      >
-                        {feature.desc}
-                      </motion.p>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+                Work locally and without distraction with our dedicated desktop app.
+              </motion.p>
 
-              {/* Info Section */}
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.8 }}
-                className="rounded-3xl p-12 border backdrop-blur-xl"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className={`inline-flex items-center gap-2 px-4 py-2 mt-8 rounded-full border text-sm ${
+                  isDark
+                    ? 'bg-slate-900/80 border-slate-700 text-slate-200'
+                    : 'bg-white/80 border-slate-200 text-slate-600'
+                }`}
                 style={{
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.5)',
-                  borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  backdropFilter: 'blur(18px)',
+                  WebkitBackdropFilter: 'blur(18px)',
                 }}
               >
-                <div className="grid md:grid-cols-2 gap-12">
-                  <motion.div>
-                    <motion.h3
-                      className="text-2xl font-bold mb-6 flex items-center gap-3"
-                      animate={{ color: isDark ? '#ffffff' : '#000000' }}
-                    >
-                      <span className="text-orange-500 text-3xl">→</span>
-                      Installation
-                    </motion.h3>
-                    <motion.ul
-                      className="space-y-4 text-lg"
-                      animate={{ color: isDark ? '#aaaaaa' : '#555555' }}
-                    >
-                      <li>✓ Run the installer</li>
-                      <li>✓ Grant permissions</li>
-                      <li>✓ Sign in</li>
-                      <li>✓ Start using SRIKA</li>
-                    </motion.ul>
-                  </motion.div>
-
-                  <motion.div>
-                    <motion.h3
-                      className="text-2xl font-bold mb-6 flex items-center gap-3"
-                      animate={{ color: isDark ? '#ffffff' : '#000000' }}
-                    >
-                      <span className="text-orange-500 text-3xl">✓</span>
-                      Requirements
-                    </motion.h3>
-                    <motion.ul
-                      className="space-y-4 text-lg"
-                      animate={{ color: isDark ? '#aaaaaa' : '#555555' }}
-                    >
-                      <li>• 4GB RAM minimum</li>
-                      <li>• 500MB free storage</li>
-                      <li>• Modern processor</li>
-                      <li>• Active internet (first setup)</li>
-                    </motion.ul>
-                  </motion.div>
-                </div>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-fuchsia-500 text-slate-950 font-bold text-xs">
+                  B
+                </span>
+                Public beta
               </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="mt-10 flex flex-wrap justify-center gap-4"
+              >
+                <a
+                  className="download-option inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold shadow-lg transition-transform hover:-translate-y-0.5"
+                  href="https://github.com/FrigonF/SRIKA/releases/download/v1.0.0/SRIKA-Setup-1.0.0.exe"
+                  style={{
+                    backgroundColor: isDark ? '#f8f4f1' : '#0f172a',
+                    color: isDark ? '#141111' : '#f8f4f1',
+                    boxShadow: isDark
+                      ? '0 18px 40px rgba(0, 0, 0, 0.4)'
+                      : '0 12px 32px rgba(15, 23, 42, 0.25)'
+                  }}
+                >
+                  <span className="label-main">
+                    <Monitor size={18} />
+                    Download for Windows
+                  </span>
+                </a>
+                <button
+                  type="button"
+                  className="download-option is-soon inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold shadow-lg transition-transform hover:-translate-y-0.5"
+                  style={{
+                    backgroundColor: isDark ? '#f8f4f1' : '#0f172a',
+                    color: isDark ? '#141111' : '#f8f4f1',
+                    boxShadow: isDark
+                      ? '0 18px 40px rgba(0, 0, 0, 0.4)'
+                      : '0 12px 32px rgba(15, 23, 42, 0.25)'
+                  }}
+                  aria-disabled="true"
+                >
+                  <span className="label-main">
+                    <Apple size={18} />
+                    Download for Mac
+                  </span>
+                  <span className="label-alt">
+                    <Apple size={18} />
+                    Coming soon
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="download-option is-soon inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold shadow-lg transition-transform hover:-translate-y-0.5"
+                  style={{
+                    backgroundColor: isDark ? '#f8f4f1' : '#0f172a',
+                    color: isDark ? '#141111' : '#f8f4f1',
+                    boxShadow: isDark
+                      ? '0 18px 40px rgba(0, 0, 0, 0.4)'
+                      : '0 12px 32px rgba(15, 23, 42, 0.25)'
+                  }}
+                  aria-disabled="true"
+                >
+                  <span className="label-main">
+                    <Smartphone size={18} />
+                    Download for Android
+                  </span>
+                  <span className="label-alt">
+                    <Smartphone size={18} />
+                    Coming soon
+                  </span>
+                </button>
+              </motion.div>
+
             </div>
           </section>
         </main>
@@ -374,4 +220,3 @@ export default function DownloadPage() {
     </ThemeProvider>
   );
 }
-

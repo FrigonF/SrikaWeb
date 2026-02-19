@@ -15,8 +15,8 @@ export function AwareNav() {
   
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 pointer-events-none"
-      style={{ opacity }}
+      className="fixed top-0 left-0 right-0 z-50 pointer-events-auto"
+      style={{ opacity, zIndex: 9999 }}
     >
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="text-sm tracking-widest text-[#E6E8EC]">
