@@ -145,7 +145,7 @@ function DownloadPageContent() {
               >
                 <a
                   className="download-option inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold shadow-lg transition-transform hover:-translate-y-0.5"
-                  href="https://github.com/FrigonF/SRIKA/releases/download/v1.0.8/SRIKA-Setup-1.0.8.exe"
+                  href="https://github.com/FrigonF/SRIKA/releases/download/v1.0.9/SRIKA-Setup-1.0.9.exe"
                   style={{
                     backgroundColor: isDark ? '#f8f4f1' : '#0f172a',
                     color: isDark ? '#141111' : '#f8f4f1',
