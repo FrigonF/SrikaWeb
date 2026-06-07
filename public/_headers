@@ -1,0 +1,8 @@
+/login
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/dashboard
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/auth/callback
+  X-Robots-Tag: noindex, nofollow, noarchive
