@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /dashboard
+Disallow: /auth/callback
+Disallow: /api/
+
+Sitemap: https://srika.pages.dev/sitemap.xml
